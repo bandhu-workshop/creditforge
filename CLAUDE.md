@@ -49,6 +49,10 @@ uv add <package>     # add a dependency
     commit message (e.g. `feat: add password reset flow`).
   - Full rationale, GitHub settings, and setup checklist:
     `localdev/docs/github-workflow/repo-branch-protection.md`.
+  - Never add a `Co-Authored-By: Claude ...` (or any AI) trailer to commit
+    messages, and never mention Claude/AI authorship in commits or PR
+    descriptions. Claude/AI must never show up as a GitHub contributor on
+    this repo — commit authorship stays solely the human developer's.
 
 
 
