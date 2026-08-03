@@ -8,13 +8,23 @@ description = "Add your description here"
 readme = "README.md"
 license = "Apache-2.0"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "alembic>=1.18.5",
+    "asyncpg>=0.31.0",
+    "fastapi>=0.141.1",
+    "google-adk>=2.6.1",
+    "pydantic-settings>=2.14.2",
+    "sqlmodel>=0.0.39",
+    "uvicorn[standard]>=0.52.1",
+]
 
 [dependency-groups]
 dev = [
     "ruff>=0.8",
     "mypy>=1.13",
     "pytest>=8.3",
+    "httpx>=0.28.1",
+    "pytest-asyncio>=1.4.0",
 ]
 
 [tool.ruff]
@@ -29,6 +39,7 @@ ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+asyncio_mode = "auto"
 
 [build-system]
 requires = ["hatchling"]
