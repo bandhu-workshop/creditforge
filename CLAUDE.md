@@ -121,23 +121,10 @@ When adding or changing configuration:
 
 ## Common Commands
 
-```bash
-uv sync              # Create or update .venv from pyproject.toml and uv.lock
-uv add <package>     # Add a dependency
-just dev             # Run the FastAPI app with reload (uvicorn)
-just lint            # ruff check
-just typecheck       # mypy src
-just test            # pytest
-just ci              # lint + typecheck + test (same gate CI runs)
-just db-up           # Start local Postgres (docker compose)
-just db-down         # Stop local Postgres
-just migrate         # Apply Alembic migrations (alembic upgrade head)
-just makemigrations "message"      # Generate a new migration
-```
-
-All frequently used commands are kept in the `Justfile` for convenience —
-use it rather than retyping raw commands. Run `just ci` before considering
-any change done; it's the same gate the `CI` GitHub Actions workflow runs.
+All frequently used commands (sync, dev, lint, typecheck, test, ci, db-up,
+db-down, migrate, makemigrations) are kept in the `Justfile` — use it
+rather than retyping raw commands. Run `just ci` before considering any
+change done; it's the same gate the `CI` GitHub Actions workflow runs.
 
 ## Testing
 
