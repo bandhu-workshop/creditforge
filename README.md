@@ -19,19 +19,58 @@ missed upsell.
 This is an early-stage, actively developed project — see
 [`CLAUDE.md`](CLAUDE.md) for the current state of the codebase.
 
-## Local development
+## Getting Started
+
+### Prerequisites
+
+- Python 3.12
+- [uv](https://docs.astral.sh/uv/)
+- Docker (for local Postgres)
+- [direnv](https://direnv.net/) (recommended, for automatic env loading)
+
+### Install
+
+```bash
+git clone https://github.com/bandhu-workshop/creditforge.git
+cd creditforge
+uv sync
+```
+
+### Configure
+
+```bash
+cp .env.example .env    # fill in local values
+direnv allow             # or: eval "$(direnv hook <shell>)" first, if not set up yet
+```
 
 Environment variables are loaded via `.envrc` (direnv), which loads `.env`
-if present (`cp .env.example .env`, then `direnv allow`). Full strategy —
-what goes in `.env` vs `.envrc`, secret handling, Cloud Run plans — is in
+if present. Full strategy — what goes in `.env` vs `.envrc`, secret
+handling, Cloud Run plans — is in
 [`docs/environment-variables/environment-variables.md`](docs/environment-variables/environment-variables.md).
-Current variables:
 
-| Variable | Default | Purpose |
-|---|---|---|
-| `APP_NAME` | `creditforge` | Application name (used in OpenAPI title) |
-| `ENVIRONMENT` | `development` | Deployment environment name |
-| `DATABASE_URL` | `postgresql+asyncpg://creditforge:creditforge@localhost:5432/creditforge` | Async Postgres connection string |
+### Run
+
+```bash
+just db-up      # start local Postgres
+just migrate    # apply database migrations
+just dev        # run the app with reload
+```
+
+Verify it's up:
+
+```bash
+curl http://localhost:8000/health
+```
+
+### Test
+
+```bash
+just test    # run the test suite
+just ci      # lint + typecheck + test (same gate CI runs)
+```
+
+All frequently used commands are in the `Justfile` — see `CLAUDE.md` for
+the project's full command set and conventions.
 
 ## License
 
