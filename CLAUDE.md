@@ -91,6 +91,41 @@ use it rather than retyping raw commands.
 
 ## Workflow Rules
 
+### Browser-based debugging (Playwright MCP)
+
+This repo has a `playwright` MCP server configured at project scope
+(`.mcp.json`, committed — anyone opening the repo in Claude Code will be
+prompted to approve it once). It drives a real, automatable browser
+(navigate, click, screenshot, read console/network logs) — this is what to
+use for deep, end-to-end debugging of the running application, not just
+reading code.
+
+**When to use it:** only when asked to debug, verify, or reproduce
+something in a running instance of the app — e.g. "check why the login
+page is blank," "confirm the ADK agent's streaming response renders
+correctly." Do not reach for it for routine code changes; use it once
+something needs to be *observed running*, not just read or edited.
+
+**How to use it:** navigate to the relevant URL below, reproduce the issue,
+and cross-reference with the corresponding logs/observability source and
+the relevant code location so the fix targets the right layer (UI vs API
+vs agent vs DB).
+
+Debugging resources:
+
+| Resource | Location |
+|---|---|
+| Backend code | `src/creditforge/` |
+| Backend local URL | `http://localhost:8000` (via `just dev`; `/health`, `/api/v1/...`) |
+| UI code | *(placeholder — no frontend exists in this repo yet)* |
+| Frontend local URL | *(placeholder — no frontend exists yet)* |
+| Application logs | `localdev/logs/` (intended location; nothing streams here yet — wire up file logging before relying on this) |
+| ADK session details | *(placeholder — no ADK agent/session endpoint implemented yet; see `src/creditforge/ai/`)* |
+| Phoenix observability | *(placeholder — not yet set up)* |
+
+Update this table as each placeholder becomes real — don't leave it stale
+once the frontend, ADK sessions, or Phoenix are actually wired up.
+
 ### Git and GitHub
 
 - Never use the GitKraken MCP server; always use the `git`/`gh` CLI.
