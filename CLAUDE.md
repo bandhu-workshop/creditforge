@@ -28,6 +28,28 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Python `>=3.12` (pinned to 3.12 via `.python-version`).
 - Dependency/environment management is via `uv` (`uv.lock` present).
 
+## Environment-variable rules
+
+The canonical environment-variable guide is `docs/environment-variables.md`.
+
+When creating or modifying configuration:
+  - Use `.env` for local values and secrets. Never commit `.env`.
+  - Update `.env.example` whenever a variable is added, renamed, or removed.
+  - Use `.envrc` only for direnv shell setup and non-secret developer
+    tooling. Never place credentials, tokens, passwords, or API keys in
+    `.envrc` — it is committed to Git.
+  - Application code must read configuration from the process environment
+    (`Settings` in `src/creditforge/core/config.py`) — never make it depend
+    on `.env`/`.envrc` existing.
+  - Validate required variables via `Settings` fields with no default; never
+    log secret values.
+  - Do not copy `.env` into Docker images.
+  - For future Cloud Run deployment: normal environment variables for
+    non-sensitive config, Google Secret Manager for sensitive values.
+  - Preserve the commented GCP/Cloud Run reference section in `.envrc`; do
+    not uncomment or implement Cloud Run deployment configuration unless
+    the current task explicitly concerns deployment.
+
 ## Common commands:
 
 ```bash
@@ -43,7 +65,7 @@ uv add <package>     # add a dependency
   - Never use the git-kraken MCP server; always use `git`/`gh` CLI.
   - Repo is public. Solo-dev flow: PRs required into `main`, 0 required
     approvals, CI is the gate, squash-merge only, auto-merge after CI passes.
-  - Branch names: `feat/…`, `fix/…`, `refactor/…`, `docs/…`.
+  - Branch names: `feat/…`, `fix/…`, `refactor/…`, `docs/…`, `chore/…`.
   - PR title = squash commit message on `main` — write it as a proper
     commit message (e.g. `feat: add password reset flow`).
   - Full rationale, GitHub settings, and setup checklist:
