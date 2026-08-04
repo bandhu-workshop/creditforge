@@ -26,14 +26,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Environment
 
 - Python `>=3.12` (pinned to 3.12 via `.python-version`).
-- Dependency/environment management is via `uv` (`uv.lock` present); no dependencies are declared yet in
-  `pyproject.toml`.
+- Dependency/environment management is via `uv` (`uv.lock` present).
 
 ## Common commands:
 
 ```bash
 uv sync              # create/update .venv from pyproject.toml + uv.lock
-uv run main.py       # run the entry point
+just dev              # run the FastAPI app with reload (uvicorn)
 uv add <package>     # add a dependency
 ```
 - we will keep all the common commands in `Justfile` for conveniencea and use repeadely when ever needed.
