@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Dinabandhu Behera
+# SPDX-License-Identifier: Apache-2.0
+
 import asyncio
 from logging.config import fileConfig
 
@@ -40,7 +43,9 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    url = config.get_main_option("sqlalchemy.url")
+    from creditforge.core.config import get_settings
+
+    url = get_settings().database_url
     context.configure(
         url=url,
         target_metadata=target_metadata,
