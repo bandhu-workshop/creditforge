@@ -11,9 +11,38 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Structure
 
-### `src/`
+### `src/creditforge/`
 
-All backend application code.
+Layered backend package. Each layer has one job — don't reach across
+layers (e.g. a route pulling DB internals directly instead of going
+through `api/deps.py`):
+
+- `main.py` — app-factory (`create_app()`) plus the module-level `app`
+  ASGI entry point (`uvicorn creditforge.main:app`). Wires settings,
+  logging, exception handlers, routers, and the DB-engine shutdown
+  lifespan together; contains no logic of its own.
+- `core/` — cross-cutting concerns: `config.py` (`Settings`, env-driven,
+  see Environment variables below), `logging.py`, `exceptions.py`
+  (`AppError` hierarchy + FastAPI handlers).
+- `api/` — HTTP layer. `deps.py` holds shared FastAPI dependencies
+  (e.g. `DbSession`); `health.py` is the unversioned health check;
+  `v1/` is the versioned API — new endpoints get their own router under
+  `v1/` and are registered on `v1/router.py`'s aggregator.
+- `db/` — `base.py` holds the SQLModel metadata (import new models here
+  so Alembic's autogenerate sees them); `session.py` is the async
+  engine/session factory. DB access is async-only (`asyncpg` +
+  `AsyncSession`) — no sync SQLAlchemy path, anywhere.
+- `models/` — SQLModel ORM/table classes (one file per domain concept).
+- `schemas/` — Pydantic request/response models. Kept separate from
+  `models/` so API contracts don't leak DB column structure.
+- `services/` — business logic and third-party integrations, orchestrates
+  `models`/`db` and (eventually) the rules engine.
+- `ai/` — Google ADK agentic code: `agents/` (agent definitions),
+  `tools/` (functions agents call), `prompts/` (markdown templates).
+
+All of the above except `main.py`/`core/` is currently an empty,
+importable skeleton — no domain logic (`Card`/`Recommendation`/`Strategy`/
+rules engine/auth) exists yet. Don't assume it does.
 
 ### `docs/` (repo root, committed to Git)
 
@@ -82,12 +111,39 @@ When adding or changing configuration:
 
 ```bash
 uv sync              # Create or update .venv from pyproject.toml and uv.lock
-just dev             # Run the FastAPI app with reload (uvicorn)
 uv add <package>     # Add a dependency
+just dev             # Run the FastAPI app with reload (uvicorn)
+just lint            # ruff check
+just typecheck       # mypy src
+just test            # pytest
+just ci              # lint + typecheck + test (same gate CI runs)
+just db-up           # Start local Postgres (docker compose)
+just db-down         # Stop local Postgres
+just migrate         # Apply Alembic migrations (alembic upgrade head)
+just makemigrations "message"      # Generate a new migration
 ```
 
 All frequently used commands are kept in the `Justfile` for convenience —
-use it rather than retyping raw commands.
+use it rather than retyping raw commands. Run `just ci` before considering
+any change done; it's the same gate the `CI` GitHub Actions workflow runs.
+
+## Testing
+
+- `tests/unit/` mirrors `src/creditforge/`'s layout 1:1 (`tests/unit/api/`
+  tests `src/creditforge/api/`, and so on) — put a new test next to its
+  sibling, not in whichever file is open.
+- `tests/integration/` is for cross-module tests that hit a real endpoint
+  or a real DB; expected to stay empty until DB-dependent behavior exists.
+- Tests are async-friendly by default: `asyncio_mode = "auto"` is set in
+  `pyproject.toml`, so `async def test_...` needs no `@pytest.mark.asyncio`
+  decorator.
+- `tests/conftest.py`'s autouse fixture clears the `Settings`/DB-engine
+  `lru_cache`s before and after every test — if a new cached singleton is
+  added anywhere, clear it there too, or tests will silently leak state
+  across each other.
+- Prefer real behavior over mocks: build a real `FastAPI` app + `TestClient`
+  for API tests, a real `AsyncEngine`/`AsyncSession` for DB tests (no live
+  connection required — connections are lazy).
 
 ## Workflow Rules
 
