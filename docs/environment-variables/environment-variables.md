@@ -77,7 +77,7 @@ It must not contain:
 
 The `.envrc` file is committed to Git.
 
-### `docs/environment-variables.md` (this file)
+### `docs/environment-variables/environment-variables.md` (this file)
 
 This document is the canonical source for the environment-variable strategy.
 
@@ -425,21 +425,22 @@ creditforge/
 ├── .dockerignore
 ├── CLAUDE.md
 ├── docs/
-│   └── environment-variables.md
+│   └── environment-variables/
+│       └── environment-variables.md
 └── src/
 ```
 
 Repository status:
 
-| File                            | Commit? | May contain secrets? |
-| ------------------------------- | ------: | -------------------: |
-| `.env`                          |      No |      Yes, local only |
-| `.env.example`                  |     Yes |                   No |
-| `.envrc`                        |     Yes |                   No |
-| `.gitignore`                    |     Yes |                   No |
-| `.dockerignore`                 |     Yes |                   No |
-| `docs/environment-variables.md` |     Yes |                   No |
-| `CLAUDE.md`                     |     Yes |                   No |
+| File                                                | Commit? | May contain secrets? |
+| ---------------------------------------------------- | ------: | -------------------: |
+| `.env`                                                |      No |      Yes, local only |
+| `.env.example`                                        |     Yes |                   No |
+| `.envrc`                                              |     Yes |                   No |
+| `.gitignore`                                          |     Yes |                   No |
+| `.dockerignore`                                       |     Yes |                   No |
+| `docs/environment-variables/environment-variables.md` |     Yes |                   No |
+| `CLAUDE.md`                                           |     Yes |                   No |
 
 ---
 

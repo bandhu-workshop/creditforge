@@ -5,8 +5,8 @@
 Environment variables are loaded via `.envrc` (direnv), which loads `.env`
 if present (`cp .env.example .env`, then `direnv allow`). Full strategy —
 what goes in `.env` vs `.envrc`, secret handling, Cloud Run plans — is in
-[`docs/environment-variables.md`](docs/environment-variables.md). Current
-variables:
+[`docs/environment-variables/environment-variables.md`](docs/environment-variables/environment-variables.md).
+Current variables:
 
 | Variable | Default | Purpose |
 |---|---|---|

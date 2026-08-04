@@ -57,8 +57,8 @@ Subfolders and their purpose:
 
 ### Environment variables
 
-The canonical guide is `docs/environment-variables.md`. When adding or
-changing configuration:
+The canonical guide is `docs/environment-variables/environment-variables.md`.
+When adding or changing configuration:
 
 - Put local values and secrets in `.env`. Never commit `.env`.
 - Update `.env.example` whenever a variable is added, renamed, or removed.
@@ -136,8 +136,22 @@ once the frontend, ADK sessions, or Phoenix are actually wired up.
 - The PR title becomes the squash commit message on `main` — write it as
   a proper commit message (e.g. `feat: add password reset flow`).
 - Full rationale, GitHub settings, and setup checklist:
-  `localdev/docs/github-workflow/repo-branch-protection.md`.
+  `docs/github-workflow/repo-branch-protection.md`.
 - Never add a `Co-Authored-By: Claude …` (or any AI) trailer to commit
   messages, and never mention Claude/AI authorship in commits or PR
   descriptions. Claude/AI must never appear as a GitHub contributor on
   this repo — commit authorship stays solely with the human developer.
+
+### Licensing
+
+Project is Apache 2.0. SPDX header convention, NOTICE/CITATION.cff setup,
+and rationale: `docs/licensing/apache-2.0-setup.md`.
+
+### Docs organization
+
+Inside `docs/`, each topic gets its own umbrella folder
+(`docs/<topic>/<file>.md`) rather than a loose top-level `.md` file — even
+for a single file today — so related material (diagrams, examples, more
+docs on the same topic) has an obvious home later without a rename/move.
+See `docs/environment-variables/`, `docs/github-workflow/`,
+`docs/licensing/` for the pattern.
