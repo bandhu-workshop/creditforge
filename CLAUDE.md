@@ -11,9 +11,50 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Structure
 
-### `src/`
+### `src/creditforge/`
 
-All backend application code.
+Layered backend package. Each layer has one job — don't reach across
+layers (e.g. a route pulling DB internals directly instead of going
+through `api/deps.py`). Keep this tree updated as the project grows —
+one line per new file/folder, purpose only:
+
+```
+src/creditforge/
+├── main.py              # App factory (create_app()) + ASGI entry point
+├── core/                # Cross-cutting concerns
+│   ├── config.py            # Settings (env-driven)
+│   ├── logging.py           # setup_logging()
+│   └── exceptions.py        # AppError hierarchy + FastAPI handlers
+├── api/                 # HTTP layer
+│   ├── deps.py               # Shared FastAPI dependencies (e.g. DbSession)
+│   ├── health.py             # Unversioned health check
+│   └── v1/                   # Versioned API
+│       └── router.py             # Aggregator new endpoint routers attach to
+├── db/                  # Async-only DB access (asyncpg + AsyncSession)
+│   ├── base.py               # SQLModel metadata (register new models here)
+│   └── session.py            # Async engine/session factory
+├── models/               # SQLModel ORM/table classes, one file per concept
+├── schemas/              # Pydantic request/response models
+├── services/             # Business logic + third-party integrations
+└── ai/                   # Google ADK agentic code
+    ├── agents/               # Agent definitions
+    ├── tools/                # Functions agents call
+    └── prompts/              # Markdown prompt templates
+```
+
+Notes that don't fit in a one-liner:
+- `main.py` contains no logic of its own — it only wires settings,
+  logging, exception handlers, routers, and the DB-engine shutdown
+  lifespan together.
+- `db/`: no sync SQLAlchemy path anywhere in the codebase.
+- `schemas/` is kept separate from `models/` so API contracts don't leak
+  DB column structure.
+- Register new SQLModel classes in `db/base.py`'s metadata, or Alembic's
+  autogenerate won't see them.
+
+Everything except `main.py`/`core/` is currently an empty, importable
+skeleton — no domain logic (`Card`/`Recommendation`/`Strategy`/rules
+engine/auth) exists yet. Don't assume it does.
 
 ### `docs/` (repo root, committed to Git)
 
@@ -82,12 +123,39 @@ When adding or changing configuration:
 
 ```bash
 uv sync              # Create or update .venv from pyproject.toml and uv.lock
-just dev             # Run the FastAPI app with reload (uvicorn)
 uv add <package>     # Add a dependency
+just dev             # Run the FastAPI app with reload (uvicorn)
+just lint            # ruff check
+just typecheck       # mypy src
+just test            # pytest
+just ci              # lint + typecheck + test (same gate CI runs)
+just db-up           # Start local Postgres (docker compose)
+just db-down         # Stop local Postgres
+just migrate         # Apply Alembic migrations (alembic upgrade head)
+just makemigrations "message"      # Generate a new migration
 ```
 
 All frequently used commands are kept in the `Justfile` for convenience —
-use it rather than retyping raw commands.
+use it rather than retyping raw commands. Run `just ci` before considering
+any change done; it's the same gate the `CI` GitHub Actions workflow runs.
+
+## Testing
+
+- `tests/unit/` mirrors `src/creditforge/`'s layout 1:1 (`tests/unit/api/`
+  tests `src/creditforge/api/`, and so on) — put a new test next to its
+  sibling, not in whichever file is open.
+- `tests/integration/` is for cross-module tests that hit a real endpoint
+  or a real DB; expected to stay empty until DB-dependent behavior exists.
+- Tests are async-friendly by default: `asyncio_mode = "auto"` is set in
+  `pyproject.toml`, so `async def test_...` needs no `@pytest.mark.asyncio`
+  decorator.
+- `tests/conftest.py`'s autouse fixture clears the `Settings`/DB-engine
+  `lru_cache`s before and after every test — if a new cached singleton is
+  added anywhere, clear it there too, or tests will silently leak state
+  across each other.
+- Prefer real behavior over mocks: build a real `FastAPI` app + `TestClient`
+  for API tests, a real `AsyncEngine`/`AsyncSession` for DB tests (no live
+  connection required — connections are lazy).
 
 ## Workflow Rules
 
