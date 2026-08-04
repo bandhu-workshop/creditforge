@@ -1,0 +1,15 @@
+# SPDX-FileCopyrightText: 2026 Dinabandhu Behera
+# SPDX-License-Identifier: Apache-2.0
+#
+# No Dockerfile exists yet — this is prepared ahead of time so secrets never
+# accidentally end up in a future image. See docs/environment-variables.md.
+
+.env
+.env.*
+.envrc
+.venv
+.direnv
+.git
+*.service-account.json
+gcp-credentials.json
+credentials.json

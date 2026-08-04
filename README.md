@@ -2,13 +2,17 @@
 
 ## Local development
 
-Environment variables are loaded via `.envrc` (direnv) — no `.env` file is
-used. Required variables:
+Environment variables are loaded via `.envrc` (direnv), which loads `.env`
+if present (`cp .env.example .env`, then `direnv allow`). Full strategy —
+what goes in `.env` vs `.envrc`, secret handling, Cloud Run plans — is in
+[`docs/environment-variables.md`](docs/environment-variables.md). Current
+variables:
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `DATABASE_URL` | `postgresql+asyncpg://creditforge:creditforge@localhost:5432/creditforge` | Async Postgres connection string |
+| `APP_NAME` | `creditforge` | Application name (used in OpenAPI title) |
 | `ENVIRONMENT` | `development` | Deployment environment name |
+| `DATABASE_URL` | `postgresql+asyncpg://creditforge:creditforge@localhost:5432/creditforge` | Async Postgres connection string |
 
 ## License
 
