@@ -1,0 +1,23 @@
+# docker-compose.yml
+# SPDX-FileCopyrightText: 2026 Dinabandhu Behera
+# SPDX-License-Identifier: Apache-2.0
+
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: creditforge
+      POSTGRES_USER: creditforge
+      POSTGRES_PASSWORD: creditforge
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U creditforge"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
