@@ -14,7 +14,7 @@ def test_settings_reads_database_url_from_env(monkeypatch):
 
 
 def test_settings_has_expected_defaults():
-    settings = Settings(_env_file=None)
+    settings = Settings()
 
     assert settings.app_name == "creditforge"
     assert settings.environment == "development"
